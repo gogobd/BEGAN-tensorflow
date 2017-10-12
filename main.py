@@ -8,8 +8,8 @@ import src.models.BEGAN as began
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-f", "--flag", type=distutils.util.strtobool, default='true')
-    parser.add_argument("-g", "--gpu_number", type=str, default="0")
+    parser.add_argument("-f", "--flag", type=distutils.util.strtobool, default="true", help="0: test, 1: train")
+    parser.add_argument("-g", "--gpu_number", type=str, default="0", help="GPU unit to be used")
     parser.add_argument("-p", "--project", type=str, default="began")
 
     # Train Data

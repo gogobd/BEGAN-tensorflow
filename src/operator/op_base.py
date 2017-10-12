@@ -36,7 +36,10 @@ class op_base:
         self.embedding = args.embedding
 
         # Result Dir & File
-        self.project_dir = 'assets/{0}_{1}_{2}_{3}/'.format(self.project, self.dataset, self.data_opt, self.data_size)
+        self.project_dir = os.path.join(
+            'assets',
+            self.project + '_' + self.dataset +'_' + self.data_opt + '_' + str(self.data_size)
+        )
         self.ckpt_dir = os.path.join(self.project_dir, 'models')
         self.model_name = "{0}.model".format(self.project)
         self.ckpt_model_name = os.path.join(self.ckpt_dir, self.model_name)

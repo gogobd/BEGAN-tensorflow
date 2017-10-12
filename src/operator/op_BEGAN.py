@@ -76,11 +76,6 @@ class Operator(op_base):
             data = sorted(glob.glob(os.path.join(data_path, "*.*")))
             np.save(data_path + '.npy', data)
 
-        print('Shuffle ....')
-        random_order = np.random.permutation(len(data))
-        data = [data[i] for i in random_order[:]]
-        print('Shuffle Done')
-
         # initial parameter
         start_time = time.time()
         kt = np.float32(0.)
@@ -88,6 +83,12 @@ class Operator(op_base):
         self.count = 0
 
         for epoch in range(self.niter):
+
+            print('Shuffle ....')
+            random_order = np.random.permutation(len(data))
+            data = [data[i] for i in random_order[:]]
+            print('Shuffle Done')
+
             batch_idxs = len(data) // self.batch_size
 
             for idx in range(0, batch_idxs):
@@ -111,9 +112,9 @@ class Operator(op_base):
                 m_global = d_real_loss + np.abs(self.gamma * d_real_loss - d_fake_loss)
                 loss = loss_g + loss_d
 
-                print("Epoch: [%2d] [%4d/%4d] time: %4.4f, "
+                print("Epoch: [%2d] [%4d/%4d] count:%d time:%4.4f, "
                       "loss: %.4f, loss_g: %.4f, loss_d: %.4f, d_real: %.4f, d_fake: %.4f, kt: %.8f, M: %.8f"
-                      % (epoch, idx, batch_idxs, time.time() - start_time,
+                      % (epoch, idx, batch_idxs, self.count, time.time() - start_time,
                          loss, loss_g, loss_d, d_real_loss, d_fake_loss, kt, m_global))
 
                 # write train summary
@@ -152,9 +153,30 @@ class Operator(op_base):
 
         # output save
         if train_flag:
-            scm.imsave(self.project_dir + '/result/' + str(self.count) + '_output.bmp', im_output_gen)
+            scm.imsave(
+                os.path.join(
+                    self.project_dir,
+                    'result_train',
+                    str(self.count).zfill(8) + '_output.png'
+                ), 
+                im_output_gen
+            )
         else:
             now = datetime.datetime.now()
-            nowDatetime = now.strftime('%Y-%m-%d_%H:%M:%S')
-            scm.imsave(self.project_dir + '/result_test/gen_{}_output.bmp'.format(nowDatetime), im_output_gen)
-            scm.imsave(self.project_dir + '/result_test/dec_{}_output.bmp'.format(nowDatetime), im_output_dec)
+            nowDatetime = now.strftime('%Y%m%d_%H%M%S')
+            scm.imsave(
+                os.path.join(
+                    self.project_dir,
+                    'result_test',
+                    'gen_' + nowDatetime + '_output.png'
+                    ), 
+                im_output_gen
+            )
+            scm.imsave(
+                os.path.join(
+                    self.project_dir,
+                    'result_test',
+                    'dec_' + nowDatetime + '_output.png'
+                    ),
+                im_output_dec
+            )
